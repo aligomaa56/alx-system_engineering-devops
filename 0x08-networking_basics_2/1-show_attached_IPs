@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#This scrpt displays all acive IPv4 addresses on the machine.
+
+ifconfig | awk '/inet (addr:)?([0-9]*\.){3}[0-9]*/ {gsub(/inet (addr:)?/, "", $2); print $2}'
