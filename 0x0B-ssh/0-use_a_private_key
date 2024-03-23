@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This script demonstrates the use of a private key to connect to a server using SSH.
+
+ssh -i ~/.ssh/school ubuntu@server01
+
