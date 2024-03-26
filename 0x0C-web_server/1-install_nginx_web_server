@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#install nginx
 
 # Variables
 BACKUP_FILE="/var/www/html/index.nginx-debian.html.bckp"
