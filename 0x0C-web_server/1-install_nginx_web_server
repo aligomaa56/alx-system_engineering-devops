@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
-# install Nginx on Ubuntu and set basic configurations
+
 # Variables
-NGINX_CONF="/etc/nginx/sites-available/default"
 BACKUP_FILE="/var/www/html/index.nginx-debian.html.bckp"
 INDEX_FILE="/var/www/html/index.nginx-debian.html"
 LOG_FILE="/var/log/nginx_install.log"
 
 # Update package index and install Nginx
-sudo apt-get update -y >> $LOG_FILE 2>&1 && \
-sudo apt-get install nginx -y >> $LOG_FILE 2>&1 && \
+sudo apt-get update -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+sudo apt-get install nginx -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
 
 # Start Nginx service
-sudo service nginx start >> $LOG_FILE 2>&1 && \
+sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
 
 # Allow HTTP traffic through firewall
-sudo ufw allow 'Nginx HTTP' >> $LOG_FILE 2>&1 && \
+sudo ufw allow 'Nginx HTTP' 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
 
 # Change ownership and permissions for web root directory
 sudo chown -R "$USER":"$USER" /var/www/html && \
@@ -25,13 +24,13 @@ cp $INDEX_FILE $BACKUP_FILE && \
 echo "Hello World!" | sudo tee $INDEX_FILE > /dev/null && \
 
 # Restart Nginx
-if pgrep -x "nginx" > /dev/null
-then
+if pgrep -x "nginx" > /dev/null; then
     echo "Nginx is running. Restarting..."
-    sudo service nginx restart >> $LOG_FILE 2>&1
+    sudo service nginx restart 2>&1 | sudo tee -a $LOG_FILE > /dev/null
 else
     echo "Nginx is not running. Starting..."
-    sudo service nginx start >> $LOG_FILE 2>&1
+    sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null
 fi
 
 echo "Nginx installed and configured. Log file: $LOG_FILE"
+
