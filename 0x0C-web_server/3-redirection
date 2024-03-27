@@ -1,39 +1,35 @@
 #!/usr/bin/env bash
-# install nginx
+# Configures a new ubuntu machine by installing
+# Nginx where it should be listening on port 80
+# Serve a page that would return a Hello World string
+#
 
-# Variables
-BACKUP_FILE="/var/www/html/index.nginx-debian.html.bckp"
-INDEX_FILE="/var/www/html/index.nginx-debian.html"
-LOG_FILE="/var/log/nginx_install.log"
+echo -e "Updating and installing Nginx.\n"
+sudo apt-get update -y -qq && \
+	 sudo apt-get install nginx -y
 
-# Update package index and install Nginx
-sudo apt-get update -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
-sudo apt-get install nginx -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+echo -e "\nSetting up some minor stuff.\n"
 
-# Start Nginx service
-sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+# starting nginx service
+sudo service nginx start
 
-# Allow HTTP traffic through firewall
-sudo ufw allow 'Nginx HTTP' 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+# allowing nginx on firewall
+sudo ufw allow 'Nginx HTTP'
 
-# Change ownership and permissions for web root directory
-sudo chown -R "$USER":"$USER" /var/www/html && \
-sudo chmod -R 755 /var/www/html && \
+# Give the user ownership to website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
 
-# Backup the default Nginx index file and replace with "Hello World!"
-cp $INDEX_FILE $BACKUP_FILE && \
-echo "Hello World!" | sudo tee $INDEX_FILE > /dev/null && \
+# Backup default index
+cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
 
-# Restart Nginx
-if pgrep -x "nginx" > /dev/null; then
-    echo "Nginx is running. Restarting..."
-    sudo service nginx restart 2>&1 | sudo tee -a $LOG_FILE > /dev/null
-else
-    echo "Nginx is not running. Starting..."
-    sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null
-fi
+# Creating new index
+echo -e "Hello World!" > /var/www/html/index.nginx-debian.html
 
-# Add the sed command to insert the rewrite rule
-sudo sed -i '24i\ \ \ \ rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+# Setting up /redirect_me to a youtube video
+sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
 
-echo "Nginx installed and configured. Log file: $LOG_FILE"
+# Restarting nginx
+sudo service nginx restart
+
+echo -e "\nCompleted.\n"
