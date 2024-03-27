@@ -34,6 +34,6 @@ else
 fi
 
 # Add the sed command to insert the rewrite rule
-sudo sed -i '24i\       rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+sudo sed -i '24i\ \ \ \ rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
 
 echo "Nginx installed and configured. Log file: $LOG_FILE"
