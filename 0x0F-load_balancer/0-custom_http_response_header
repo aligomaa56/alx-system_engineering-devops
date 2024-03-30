@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#install nginx
+
+# Variables
+BACKUP_FILE="/var/www/html/index.nginx-debian.html.bckp"
+INDEX_FILE="/var/www/html/index.nginx-debian.html"
+LOG_FILE="/var/log/nginx_install.log"
+
+# Update package index and install Nginx
+sudo apt-get update -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+sudo apt-get install nginx -y 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+
+# Start Nginx service
+sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+
+# Allow HTTP traffic through firewall
+sudo ufw allow 'Nginx HTTP' 2>&1 | sudo tee -a $LOG_FILE > /dev/null && \
+
+# Change ownership and permissions for web root directory
+sudo chown -R "$USER":"$USER" /var/www/html && \
+sudo chmod -R 755 /var/www/html && \
+
+# Backup the default Nginx index file and replace with "Hello World!"
+cp $INDEX_FILE $BACKUP_FILE && \
+echo "Hello World!" | sudo tee $INDEX_FILE > /dev/null && \
+
+# Setting up /redirect_me to a youtube video
+sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+
+# Set up a 404 page
+echo "Ceci n'est pas une page" >> /var/www/html/error_404.html
+sudo sed -i '25i\	error_page 404 /error_404.html;' /etc/nginx/sites-available/default
+
+# Creating an HTTP response header
+sudo sed -i "/server_name _/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
+
+# Testing configurations for syntax errors
+sudo nginx -t
+
+# Restart Nginx
+if pgrep -x "nginx" > /dev/null; then
+    echo "Nginx is running. Restarting..."
+    sudo service nginx restart 2>&1 | sudo tee -a $LOG_FILE > /dev/null
+else
+    echo "Nginx is not running. Starting..."
+    sudo service nginx start 2>&1 | sudo tee -a $LOG_FILE > /dev/null
+fi
+
+echo "Nginx installed and configured. Log file: $LOG_FILE"
+
