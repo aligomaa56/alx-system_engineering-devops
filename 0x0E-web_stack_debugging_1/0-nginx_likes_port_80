@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#Nginx likes port 80
+
+sites_available="/etc/nginx/sites-available/default"
+sites_enabled="/etc/nginx/sites-enabled/default"
+
+cp "$sites_available" "$sites_enabled"
+
+systemctl restart nginx
