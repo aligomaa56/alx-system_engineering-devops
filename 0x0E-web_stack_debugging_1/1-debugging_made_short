@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Installing new server to serve content
-./0-nginx_likes_port_80
-echo "hi" > /var/run/nginx.pid
-echo "hi" > /run/nginx.pid
+# change nginx to listen on port 80 and kill it
+sed -i "s/8080/80/g" /etc/nginx/sites-enabled/default
+pkill -f --signal 1 "/usr/sbin/nginx"
