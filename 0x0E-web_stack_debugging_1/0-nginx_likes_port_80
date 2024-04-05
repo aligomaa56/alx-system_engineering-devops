@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-#Nginx likes port 80
-
-sites_available="/etc/nginx/sites-available/default"
-sites_enabled="/etc/nginx/sites-enabled/default"
-
-cp "$sites_available" "$sites_enabled"
-
-systemctl restart nginx
+# Setting up server to curl port 80 with no issues
+apt-get update
+apt-get -y install curl
+rm /etc/nginx/sites-available/*
+rm /etc/nginx/sites-enabled/*~
+sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
+sudo service nginx restart
