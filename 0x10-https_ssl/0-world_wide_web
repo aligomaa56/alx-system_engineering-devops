@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Function to query DNS and extract information
+
+query_dns() {
+    domain=$1
+    subdomain=$2
+
+    if [ -z "$subdomain" ]; then
+        subdomains=("www" "lb-01" "web-01" "web-02")
+    else
+        subdomains=("$subdomain")
+    fi
+
+    for sub in "${subdomains[@]}"; do
+        output=$(dig "$sub"."$domain" | awk '/^;; ANSWER SECTION:$/,/^$/' | grep -v ';;' | grep -v '^$')
+        record_type=$(echo "$output" | awk '{print $4}')
+        destination=$(echo "$output" | awk '{print $5}')
+        echo "The subdomain $sub is a $record_type record and points to $destination"
+    done
+}
+
+# Check for mandatory domain argument
+if [ -z "$1" ]; then
+    echo "Error: Domain argument is mandatory"
+    exit 1
+fi
+
+# Main script
+domain="$1"
+subdomain="$2"
+
+query_dns "$domain" "$subdomain"
