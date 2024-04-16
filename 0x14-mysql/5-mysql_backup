@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Dumps and archives all MySQL databases
+
+# Get the current date in the specified format
+date=$(date '+%d-%m-%Y')
+
+# Dump all MySQL databases to backup.sql
+mysqldump -u root -p"$1" --all-databases > backup.sql
+
+# Create a tar.gz archive with the dump file
+tar -czvf "$date.tar.gz" backup.sql
