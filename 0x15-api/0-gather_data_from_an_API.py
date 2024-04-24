@@ -16,13 +16,12 @@ if __name__ == '__main__':
     todos_data = todos_response.json()
 
     name = user_data.get('name')
-    completed_tasks = []
+    ct = []
     for task in todos_data:
         if task.get('completed'):
-            completed_tasks.append(task.get('title'))
-    total_tasks = len(todos_data)
+            ct.append(task.get('title'))
+    tt = len(todos_data)
 
-    print(f"Employee {name} is done with\
-         tasks({len(completed_tasks)}/{total_tasks}):")
-    for task in completed_tasks:
+    print(f"Employee {name} is done with tasks({len(ct)}/{tt}):")
+    for task in ct:
         print(f"\t {task}")
