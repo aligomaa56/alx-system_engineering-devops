@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-"""export data in the csv format"""
-import csv
+"""export data in the JSON format"""
+import json
 import requests
 import sys
 
@@ -15,8 +15,14 @@ if __name__ == '__main__':
     todos_data = todos_response.json()
 
     username = user_data.get('username')
-    with open(f"{iD}.csv", "w", newline="") as cf:
-        writer = csv.writer(cf, quoting=csv.QUOTE_ALL)
-        for task in todos_data:
-            writer.writerow([iD, username, task.get('completed'),
-                            task.get('title')])
+    data = {iD: []}
+    for task in todos_data:
+        task_info = {
+            "task": task.get('title'),
+            "completed": task.get('completed'),
+            "username": username
+        }
+        data[iD].append(task_info)
+
+    with open(f"{iD}.json", "w") as jf:
+        json.dump(data, jf, indent=4)
